@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
     extern char *optarg;
     extern int optind;
     int command, iCount=0, oCount=0, cCount=0, pCount=0, rCount=0, invalidCount=0;
-    char *iTxt, *oTxt, *cTxt, *pTxt, *rTxt;
+    char *iTxt = NULL, *oTxt = NULL, *cTxt = NULL, *pTxt = NULL, *rTxt = NULL;
     bool UA = false, DA = false, IFM = false, OFU = false, CAM = false, CAI = false, PAI = false, RAI = false;
 
     while((command = getopt(argc, argv, "i:o:c:p:r:")) != -1) {
