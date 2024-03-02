@@ -187,12 +187,12 @@ int main(int argc, char **argv) {
         long rCol = 0;
         RAI = processRInputs(rMessage, rPath_to_front, rFont_size, rRow, rCol, rTxt);
         if(RAI) {
-            //printf("RAI1 returned\n");
+            printf("RAI1 returned\n");
             return R_ARGUMENT_INVALID;
         }
         FILE *fpFonts;
-        if((fpFonts = fopen(oTxt, "r")) == NULL) {
-            //printf("RAI2 returned\n");
+        if((fpFonts = fopen(rPath_to_front, "r")) == NULL) {
+            printf("RAI2 returned\n");
             return R_ARGUMENT_INVALID;
         }
     }
@@ -219,10 +219,10 @@ int main(int argc, char **argv) {
        // printf("PAI bot returned\n");
         return P_ARGUMENT_INVALID;
     } else if(RAI == true) {
-        //printf("RAI bot returned\n");
+        printf("RAI bot returned\n");
         return R_ARGUMENT_INVALID;
     } else {
-        //printf("no issue\n");
+        printf("no issue\n");
         return 0;
     }
 }
