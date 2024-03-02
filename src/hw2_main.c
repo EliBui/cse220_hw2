@@ -9,22 +9,12 @@
 #include <unistd.h>
 #include <errno.h> 
 
-// void unUsedVar(long cParameters[], long pParameters[], char *rMessage, char *rPath_to_front, long rFont_size,long rRow, long rCol) {
-//     printf("cParameters: %ld\n", *cParameters);
-//     printf("pParameters: %ld\n", *pParameters);
-//     printf("rMessage: %s\n", rMessage);
-//     printf("rPath_to_front: %s\n", rPath_to_front);
-//     printf("rFont_size: %ld\n", rFont_size);
-//     printf("rRow: %ld\n", rRow);
-//     printf("rCol: %ld\n", rCol);
-// }
-
 bool processCInputs(long *cParameters, char *cTxt) {
     char *token = strtok(cTxt, ",");
     int index = 0;
     cParameters[index++] = strtol(token, NULL, 10);
 
-    while((token = strtok(NULL, ",")) != NULL && index > 3) {
+    while((token = strtok(NULL, ",")) != NULL && index < 4) {
         cParameters[index++] = strtol(token, NULL, 10);
     }
 
@@ -40,7 +30,7 @@ bool processPInputs(long *pParameters, char *pTxt) {
 
     pParameters[index++] = strtol(token, NULL, 10);
 
-    while((token = strtok(NULL, ",")) != NULL && index > 1) {
+    while((token = strtok(NULL, ",")) != NULL && index < 2) {
         pParameters[index++] = strtol(token, NULL, 10);
     }
 
@@ -75,7 +65,7 @@ bool processRInputs(char *rMessage, char *rPath_to_front, long rFont_size, long 
     }
     rCol = strtol(token, NULL, 10);
 
-    if((token = strtok(NULL, ",")) == NULL) {
+    if((token = strtok(NULL, ",")) != NULL) {
         return true;
     }
     (void) rMessage;
@@ -94,11 +84,12 @@ int main(int argc, char **argv) {
     bool UA = false, DA = false, IFM = false, OFU = false, CAM = false, CAI = false, PAI = false, RAI = false;
 
     while((command = getopt(argc, argv, "i:o:c:p:r:")) != -1) {
-        // printf("c: %d\n", command);
+        // printf("c: %c\n", command);
         // printf("optarg: %s\n", optarg);
         // printf("optind: %d\n", optind);
         // printf("optarg first ele: %c\n", optarg[0]);
-        if(optarg[0] == '-') {
+        if(command != '?' && optarg[0] == '-') {
+            //printf("1MA returned\n");
             return MISSING_ARGUMENT;
         }
         switch(command) {
@@ -124,6 +115,7 @@ int main(int argc, char **argv) {
                 break;
             default:
                 if(optopt == 'i' || optopt == 'o' || optopt == 'c' || optopt == 'p' || optopt == 'r') {
+                    //printf("2MA returned\n");
                     return MISSING_ARGUMENT;
                 }
                 invalidCount++;
@@ -132,34 +124,39 @@ int main(int argc, char **argv) {
     }
 
     if(iCount == 0 || oCount == 0) {
+        //printf("3MA returned\n");
         return MISSING_ARGUMENT;
     }
 
     if(invalidCount > 0) {
         UA = true;
+        //printf("UA returned\n");
         return UNRECOGNIZED_ARGUMENT;
     }
 
     if(iCount > 1 || oCount > 1 || cCount > 1 || pCount > 1 || rCount > 1) {
         DA = true;
+        //printf("DA returned\n");
         return DUPLICATE_ARGUMENT;
     }
 
     FILE *fpIn;
     if((fpIn = fopen(iTxt, "r")) == NULL) {
         IFM = true;
+        //printf("IFM returned\n");
         return INPUT_FILE_MISSING;
     }
 
     FILE *fpOut;
     if((fpOut = fopen(oTxt, "w")) == NULL) {
-        printf("%s\n", oTxt);
         OFU = true;
+        //printf("OFU returned\n");
         return OUTPUT_FILE_UNWRITABLE;
     }
 
     if(pCount > 0 && cCount == 0) {
         CAM = true;
+        //printf("CAM returned\n");
         return C_ARGUMENT_MISSING;
     }
 
@@ -167,6 +164,7 @@ int main(int argc, char **argv) {
     if(cTxt != NULL) {
         CAI = processCInputs(cParameters, cTxt);
         if(CAI) {
+            //printf("CAI returned\n");
             return C_ARGUMENT_INVALID;
         }
     }
@@ -175,6 +173,7 @@ int main(int argc, char **argv) {
     if(pTxt != NULL) {
         PAI = processPInputs(pParameters, pTxt);
         if(PAI) {
+            //printf("PAI returned\n");
             return P_ARGUMENT_INVALID;
         }
     }
@@ -188,34 +187,42 @@ int main(int argc, char **argv) {
         long rCol = 0;
         RAI = processRInputs(rMessage, rPath_to_front, rFont_size, rRow, rCol, rTxt);
         if(RAI) {
+            //printf("RAI1 returned\n");
             return R_ARGUMENT_INVALID;
         }
         FILE *fpFonts;
         if((fpFonts = fopen(oTxt, "r")) == NULL) {
+            //printf("RAI2 returned\n");
             return R_ARGUMENT_INVALID;
         }
     }
-
-
-    //unUsedVar( cParameters,  pParameters,  rMessage,  rPath_to_front,  rFont_size, rRow, rCol);
     
     if(UA == true) {
+        //printf("UA bot returned\n");
         return UNRECOGNIZED_ARGUMENT;
     } else if(DA == true) {
+        //printf("DA bot returned\n");
         return DUPLICATE_ARGUMENT;
     } else if(IFM == true) {
+        //printf("IFM bot returned\n");
         return INPUT_FILE_MISSING;
     } else if(OFU == true) {
+        //printf("OFU bot returned\n");
         return OUTPUT_FILE_UNWRITABLE;
     } else if(CAM == true) {
+        //printf("CAM bot returned\n");
         return C_ARGUMENT_MISSING;
     } else if(CAI == true) {
+        //printf("CAI bot returned\n");
         return C_ARGUMENT_INVALID;
     } else if(PAI == true) {
+       // printf("PAI bot returned\n");
         return P_ARGUMENT_INVALID;
     } else if(RAI == true) {
+        //printf("RAI bot returned\n");
         return R_ARGUMENT_INVALID;
     } else {
+        //printf("no issue\n");
         return 0;
     }
 }
