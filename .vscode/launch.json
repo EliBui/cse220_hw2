@@ -9,7 +9,7 @@
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "Build",
             //"args": ["-i", "./tests/images/box.sbu", "-o", "./tests/images/box2.ppm"]
-            //"args": ["-i", "./tests/images/seawolf.ppm", "-p", "10,20", "-r", "\"hello\",\"./tests/fonts/fonts200.txt\",1,10,15", "-o", "./tests/actual_outputs/result1.ppm", "-c", "10,20,30,15"]
+            "args": ["-o", "./tests/actual_outputs/result.sbu", "-i", "./tests/images/seawolf.sbu"]
         },
         {
             "type": "cppdbg",
