@@ -22,7 +22,7 @@
 			"label": "Build",
 			"dependsOrder": "sequence",
 			"dependsOn": [
-				"delete output files",
+				//"delete output files",
 				"CMake: build",
 			]
 		}
