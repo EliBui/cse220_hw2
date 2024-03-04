@@ -136,7 +136,7 @@ void ppmToArr(int **imageArr, int imageWidth, FILE *fpIn){
         imageArr[rowIndex][colIndex+1] = g;
         imageArr[rowIndex][colIndex+2] = b;
         colIndex += 3;
-        if(colIndex >= imageWidth) { //reached the end of a row
+        if(colIndex >= imageWidth * 3) { //reached the end of a row
             colIndex = 0;
             rowIndex++;
         }
@@ -167,7 +167,7 @@ void sbuToArr(int **imageArr, int imageWidth, FILE *fpIn) {
                 imageArr[rowIndex][colIndex+1] = colorTable[num2 * 3 + 1];
                 imageArr[rowIndex][colIndex+2] = colorTable[num2 * 3 + 2];
                 colIndex += 3;
-                if(colIndex >= imageWidth) { //reached the end of a row
+                if(colIndex >= imageWidth * 3) { //reached the end of a row
                     colIndex = 0;
                     rowIndex++;
                 }
@@ -177,7 +177,7 @@ void sbuToArr(int **imageArr, int imageWidth, FILE *fpIn) {
             imageArr[rowIndex][colIndex+1] = colorTable[num1 * 3 + 1];
             imageArr[rowIndex][colIndex+2] = colorTable[num1 * 3 + 2];
             colIndex += 3;
-            if(colIndex >= imageWidth) { //reached the end of a row
+            if(colIndex >= imageWidth * 3) { //reached the end of a row
                 colIndex = 0;
                 rowIndex++;
             }
@@ -192,7 +192,7 @@ void arrToPPM(int **imageArr, int imageWidth, int imageHeight, FILE *fpOut) {
     fprintf(fpOut, "%d %d\n", imageWidth, imageHeight);
     fprintf(fpOut, "255\n");
     for(int i = 0; i < imageHeight; i++) {
-        for(int j = 0; j < imageWidth; j++) {
+        for(int j = 0; j < imageWidth * 3; j++) {
             fprintf(fpOut, "%d ", imageArr[i][j]);
         }
     }
@@ -209,7 +209,7 @@ void arrToSBU(int **imageArr, int imageWidth, int imageHeight, FILE *fpOut) {
     int colorTable[imageWidth * imageHeight * 3];
     int linearImageArr[imageWidth * imageHeight * 3];
     for(int i = 0; i < imageHeight; i++) {
-        for(int j = 0; j < imageWidth; j += 3) {
+        for(int j = 0; j < imageWidth * 3; j += 3) {
             unique = true;
             imageArr[i][j] = r;
             imageArr[i][j+1] = g;
