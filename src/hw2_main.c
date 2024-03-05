@@ -270,6 +270,13 @@ void arrToSBU(int **imageArr, int imageWidth, int imageHeight, FILE *fpOut) {
     }
 }
 
+void freeMem(int **imageArr, int imageHeight) {
+    for(int i = 0; i < imageHeight; i++) {
+        free(imageArr[i]);
+    }
+    free(imageArr);
+}
+
 int main(int argc, char **argv) {
     extern char *optarg;
     extern int optind;
@@ -436,6 +443,8 @@ int main(int argc, char **argv) {
         arrToSBU(imageArr, imageWidth, imageHeight, fpOut);
     }
     fclose(fpOut);
+
+    freeMem(imageArr, imageHeight);
 
     if(UA == true) {
         //printf("UA bot returned\n");
