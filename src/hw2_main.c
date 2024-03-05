@@ -97,10 +97,10 @@ void createCopiedRegionArr(int **imageArr, int *copiedRegion, int imageWidth, in
 }
 
 
-void pasteCopiedRegion(int **imageArr, int *copiedRegion, int imageWidth, int imageHeight, long *pParameters, long *cParameters) {
+void pasteCopiedRegion(int **imageArr, int *copiedRegion, int imageWidth, int imageHeight, long *pParameters, long *cParameters, int overflowRow, int overflowCol) {
     int copiedIndex = 0; //index for copiedRegion
     int row = pParameters[0], col = pParameters[1], width = cParameters[2], height = cParameters[3];
-    int upperR = row + height - 1, upperC = col + width - 1; //upper bound index for row & col
+    int upperR = row + height - 1 - overflowRow, upperC = col + width - 1 - overflowCol; //upper bound index for row & col
     for(int currR = 0; currR < imageHeight; currR++) {
         for(int currC = 0; currC < imageWidth; currC++) {
             if(currR < row || currR > upperR || currC > upperC) {
@@ -417,10 +417,12 @@ int main(int argc, char **argv) {
     }
     fclose(fpIn);
 
-    int *copiedRegion = (int *)malloc(imageHeight * imageWidth * 3 * sizeof(int));
+    int *copiedRegion = (int *)malloc(cParameters[2] * cParameters[3] * 3 * sizeof(int));
+    int overflowRow = (cParameters[0] + cParameters[3] > imageHeight) ? ((cParameters[0] - cParameters[3]) - imageHeight) : 0;
+    int overflowCol = (cParameters[1] + cParameters[2] > imageWidth) ? ((cParameters[1] + cParameters[2]) - imageWidth) : 0;
     if(cCount > 0) {
         createCopiedRegionArr(imageArr, copiedRegion, imageWidth, imageHeight, cParameters);
-        pasteCopiedRegion(imageArr, copiedRegion, imageWidth, imageHeight, pParameters, cParameters);
+        pasteCopiedRegion(imageArr, copiedRegion, imageWidth, imageHeight, pParameters, cParameters, overflowRow, overflowCol);
     }
 
     if(fileTypeOut == 'm') {
