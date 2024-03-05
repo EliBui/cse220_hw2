@@ -232,9 +232,9 @@ void arrToSBU(int **imageArr, int imageWidth, int imageHeight, FILE *fpOut) {
         }
     }
     //print color table
-    fprintf(fpOut, "%d", colorCount);
+    fprintf(fpOut, "%d\n", colorCount);
     for(int i = 0, k = 0; i < colorCount; i++) {
-        fprintf(fpOut, " %d %d %d", colorTable[k], colorTable[k+1], colorTable[k+2]);
+        fprintf(fpOut, "%d %d %d ", colorTable[k], colorTable[k+1], colorTable[k+2]);
         k += 3;
     }
     fprintf(fpOut, "\n");
@@ -242,7 +242,7 @@ void arrToSBU(int **imageArr, int imageWidth, int imageHeight, FILE *fpOut) {
     //print pixels
     int duplCount;
     for(int i = 0; i < LIA; i+=3) {
-        duplCount = 0;
+        duplCount = 1;
         r = linearImageArr[i];
         g = linearImageArr[i+1];
         b = linearImageArr[i+2];
@@ -256,7 +256,7 @@ void arrToSBU(int **imageArr, int imageWidth, int imageHeight, FILE *fpOut) {
         for(int j = 0; j < colorCount; j++) {
             // printf("%d %d %d == %d %d %d", colorTable[j*3], colorTable[j*3+1], colorTable[j*3+2], r, g, b);
             if(colorTable[j*3] == r && colorTable[j*3+1] == g && colorTable[j*3+2] == b) {
-                if(duplCount == 0) {
+                if(duplCount == 1) {
                     // printf(" - %d\n", j);
                     fprintf(fpOut, "%d ", j);
                     break;
