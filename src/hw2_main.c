@@ -422,7 +422,7 @@ int main(int argc, char **argv) {
     int overflowCol = 0;
     if(cCount > 0) {
         copiedRegion = (int *)malloc(cParameters[2] * cParameters[3] * 3 * sizeof(int));
-        overflowRow = (cParameters[0] + cParameters[3] > imageHeight) ? ((cParameters[0] - cParameters[3]) - imageHeight) : 0;
+        overflowRow = (cParameters[0] + cParameters[3] > imageHeight) ? ((cParameters[0] + cParameters[3]) - imageHeight) : 0;
         overflowCol = (cParameters[1] + cParameters[2] > imageWidth) ? ((cParameters[1] + cParameters[2]) - imageWidth) : 0;
         createCopiedRegionArr(imageArr, copiedRegion, imageWidth, imageHeight, cParameters);
         pasteCopiedRegion(imageArr, copiedRegion, imageWidth, imageHeight, pParameters, cParameters, overflowRow, overflowCol);
