@@ -100,10 +100,12 @@ void createCopiedRegionArr(int **imageArr, int *copiedRegion, int imageWidth, in
 void pasteCopiedRegion(int **imageArr, int *copiedRegion, int imageWidth, int imageHeight, long *pParameters, long *cParameters, int overflowRow, int overflowCol, int overflowPaste) {
     int copiedIndex = 0; //index for copiedRegion
     int row = pParameters[0], col = pParameters[1], width = cParameters[2], height = cParameters[3];
-    int upperR = (row + height - 1) > imageHeight ? imageHeight-1 : (row + height - 1); //- overflowRow;
-    int upperC = (col + width - 1) > imageWidth ? imageWidth-1 : (col + width - 1);//- overflowCol; //upper bound index for row & col
-    (void) overflowCol;
-    (void) overflowRow;
+    int upperR = row + height - 1 - overflowRow;
+    int upperC = col + width - 1 - overflowCol; //upper bound index for row & col
+    // printf("row: %d\n", row);
+    // printf("col: %d\n", col);
+    // printf("upperR: %d\n", upperR);
+    // printf("upperC: %d\n", upperC);
     for(int currR = 0; currR < imageHeight; currR++) {
         for(int currC = 0; currC < imageWidth; currC++) {
             if(currR < row || currR > upperR || currC > upperC) {
