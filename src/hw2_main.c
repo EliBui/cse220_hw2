@@ -211,9 +211,9 @@ void arrToSBU(int **imageArr, int imageWidth, int imageHeight, FILE *fpOut) {
     for(int i = 0; i < imageHeight; i++) {
         for(int j = 0; j < imageWidth * 3; j += 3) {
             unique = true;
-            imageArr[i][j] = r;
-            imageArr[i][j+1] = g;
-            imageArr[i][j+2] = b;
+            r = imageArr[i][j];
+            g = imageArr[i][j+1];
+            b = imageArr[i][j+2];
             linearImageArr[LIA] = r; LIA++;
             linearImageArr[LIA] = g; LIA++;
             linearImageArr[LIA] = b; LIA++;
@@ -231,7 +231,6 @@ void arrToSBU(int **imageArr, int imageWidth, int imageHeight, FILE *fpOut) {
             }
         }
     }
-
     //print color table
     fprintf(fpOut, "%d", colorCount);
     for(int i = 0, k = 0; i < colorCount; i++) {
@@ -244,9 +243,9 @@ void arrToSBU(int **imageArr, int imageWidth, int imageHeight, FILE *fpOut) {
     int duplCount;
     for(int i = 0; i < LIA; i+=3) {
         duplCount = 0;
-        linearImageArr[i] = r;
-        linearImageArr[i+1] = g;
-        linearImageArr[i+2] = b;
+        r = linearImageArr[i];
+        g = linearImageArr[i+1];
+        b = linearImageArr[i+2];
         i += 3;
         while(i < LIA && linearImageArr[i] == r && linearImageArr[i+1] == g && linearImageArr[i+2] == b) {
             duplCount++;
@@ -255,11 +254,16 @@ void arrToSBU(int **imageArr, int imageWidth, int imageHeight, FILE *fpOut) {
         i -= 3;
 
         for(int j = 0; j < colorCount; j++) {
+            // printf("%d %d %d == %d %d %d", colorTable[j*3], colorTable[j*3+1], colorTable[j*3+2], r, g, b);
             if(colorTable[j*3] == r && colorTable[j*3+1] == g && colorTable[j*3+2] == b) {
                 if(duplCount == 0) {
+                    // printf(" - %d\n", j);
                     fprintf(fpOut, "%d ", j);
+                    break;
                 } else {
+                    // printf(" - *%d\n", j);
                     fprintf(fpOut, "*%d %d ", duplCount, j);
+                    break;
                 }
             }
         }
