@@ -100,7 +100,10 @@ void createCopiedRegionArr(int **imageArr, int *copiedRegion, int imageWidth, in
 void pasteCopiedRegion(int **imageArr, int *copiedRegion, int imageWidth, int imageHeight, long *pParameters, long *cParameters, int overflowRow, int overflowCol, int overflowPaste) {
     int copiedIndex = 0; //index for copiedRegion
     int row = pParameters[0], col = pParameters[1], width = cParameters[2], height = cParameters[3];
-    int upperR = row + height - 1 - overflowRow, upperC = col + width - 1 - overflowCol; //upper bound index for row & col
+    int upperR = (row + height - 1) > imageHeight ? imageHeight-1 : (row + height - 1); //- overflowRow;
+    int upperC = (col + width - 1) > imageWidth ? imageWidth-1 : (col + width - 1);//- overflowCol; //upper bound index for row & col
+    (void) overflowCol;
+    (void) overflowRow;
     for(int currR = 0; currR < imageHeight; currR++) {
         for(int currC = 0; currC < imageWidth; currC++) {
             if(currR < row || currR > upperR || currC > upperC) {
@@ -114,7 +117,7 @@ void pasteCopiedRegion(int **imageArr, int *copiedRegion, int imageWidth, int im
             }
             if(overflowPaste != 0) {//if the pasting overflows off the right side
                 if(currC+1 >= imageWidth) {
-                    copiedIndex += 3 * overflowPaste;//skips over the overflow pixels
+                    copiedIndex += 3 * (overflowPaste - overflowCol);//skips over the overflow pixels
                 }
             }
         }

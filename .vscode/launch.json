@@ -10,7 +10,7 @@
             "preLaunchTask": "Build",
             //"args": ["-i", "./tests/images/box.sbu", "-o", "./tests/images/box2.ppm"]
             // "args": ["-o", "./tests/actual_outputs/result.sbu", "-i", "./tests/images/seawolf.sbu"]
-            "args": ["-c", "50,60,200,50", "-p", "50,170", "-i", "./tests/images/stony.ppm", "-o", "./tests/actual_outputs/result.ppm"]
+            "args": ["-c", "25,150,185,125", "-p", "50,200", "-i", "./tests/images/stony.sbu", "-o", "./tests/actual_outputs/result.ppm"]
         },
         {
             "type": "cppdbg",
