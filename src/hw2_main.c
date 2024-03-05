@@ -77,54 +77,43 @@ bool processRInputs(char *rMessage, char *rPath_to_front, long rFont_size, long 
 }
 
 
-void getCopiedRegionP3(int **copiedRegion, int imageWidth, long *cParameters, FILE *fpIn) {
-    int r, g, b;
-    int colIndex = 0, rowIndex = 0; //index for copiedRegion
+void createCopiedRegionArr(int **imageArr, int *copiedRegion, int imageWidth, int imageHeight, long *cParameters) {
+    int copiedIndex = 0; //index for copiedRegion
     int row = cParameters[0], col = cParameters[1], width = cParameters[2], height = cParameters[3];
-    int upperR = row + width - 1, upperC = col + height - 1; //upper bound index for row & col
-    int currR = 0, currC = 0; //current index of the image
-    while(fscanf(fpIn, "%d %d %d", &r, &g, &b) == 3) {
-        if(currR >= row  && currR <= upperR && currC >= col && currC <= upperC) { //the pixel falls within the copy region
-            copiedRegion[rowIndex][colIndex] = r;
-            copiedRegion[rowIndex][colIndex+1] = g;
-            copiedRegion[rowIndex][colIndex+2] = b;
-            colIndex += 3;
-            if(colIndex > imageWidth * 3) {
-                colIndex = 0;
-                rowIndex++;
+    int upperR = row + height - 1, upperC = col + width - 1; //upper bound index for row & col
+    for(int currR = 0; currR < imageHeight; currR++) {
+        for(int currC = 0; currC < imageWidth; currC++) {
+            if(currR < row || currR > upperR || currC > upperC) {
+                break;
             }
-        }
-        
-        if(currR >= upperR && currC > upperC) { //we passed all pixels in the copy region
-            break;
-        }
-
-        if(currC >= imageWidth) { //we reached the last pixel of that row
-            currC = 0;
-            currR++;
-        } else {
-            currC++;
+            if(currC >= col && currC <= upperC) { //the pixel is within the copy region
+                copiedRegion[copiedIndex] = imageArr[currR][currC * 3];
+                copiedRegion[copiedIndex+1] = imageArr[currR][currC * 3 + 1];
+                copiedRegion[copiedIndex+2] = imageArr[currR][currC * 3 + 2];
+                copiedIndex += 3;
+            }
         }
     }
 }
 
 
-int **createCopiedRegionArr(int imageWidth, int imageHeight, char fileTypeIn, long *cParameters, FILE *fpIn) {
-    int **copiedRegion = (int **)malloc(imageHeight * sizeof(int));
-    for(int i = 0; i < imageHeight; i++) {
-        copiedRegion[i] = (int *)malloc(imageWidth * 3 * sizeof(int));
+void pasteCopiedRegion(int **imageArr, int *copiedRegion, int imageWidth, int imageHeight, long *pParameters, long *cParameters) {
+    int copiedIndex = 0; //index for copiedRegion
+    int row = pParameters[0], col = pParameters[1], width = cParameters[2], height = cParameters[3];
+    int upperR = row + height - 1, upperC = col + width - 1; //upper bound index for row & col
+    for(int currR = 0; currR < imageHeight; currR++) {
+        for(int currC = 0; currC < imageWidth; currC++) {
+            if(currR < row || currR > upperR || currC > upperC) {
+                break;
+            }
+            if(currC >= col && currC <= upperC) { //the pixel is within the copy region
+                imageArr[currR][currC * 3] = copiedRegion[copiedIndex];
+                imageArr[currR][currC * 3 + 1] = copiedRegion[copiedIndex+1];
+                imageArr[currR][currC * 3 + 2] = copiedRegion[copiedIndex+2];
+                copiedIndex += 3;
+            }
+        }
     }
-
-    if(fileTypeIn == 'P') {
-        //call function to copy from P3
-        fscanf(fpIn, "%*[^\n]\n"); //skip the line 255
-        getCopiedRegionP3(copiedRegion, imageWidth, cParameters, fpIn);
-    } else {
-        //call function to copy from SBU
-
-    }
-
-    return copiedRegion;
 }
 
 
@@ -375,22 +364,17 @@ int main(int argc, char **argv) {
         return C_ARGUMENT_MISSING;
     }
 
-    int **copiedRegionArr = NULL;
+    long cParameters[4];
     if(cTxt != NULL) {
-        long cParameters[4];
         CAI = processCInputs(cParameters, cTxt);
         if(CAI) {
             //printf("CAI returned\n");
             return C_ARGUMENT_INVALID;
         }
-
-        copiedRegionArr = createCopiedRegionArr(imageWidth, imageHeight, fileTypeIn, cParameters, fpIn);
-        (void) copiedRegionArr;
     }
     
-    
+    long pParameters[2];
     if(pTxt != NULL) {
-        long pParameters[2];
         PAI = processPInputs(pParameters, pTxt);
         if(PAI) {
             //printf("PAI returned\n");
@@ -433,8 +417,10 @@ int main(int argc, char **argv) {
     }
     fclose(fpIn);
 
-    if(pCount > 0) {
-        //paste copiedRegion into imageArr
+    int *copiedRegion = (int *)malloc(imageHeight * imageWidth * 3 * sizeof(int));
+    if(cCount > 0) {
+        createCopiedRegionArr(imageArr, copiedRegion, imageWidth, imageHeight, cParameters);
+        pasteCopiedRegion(imageArr, copiedRegion, imageWidth, imageHeight, pParameters, cParameters);
     }
 
     if(fileTypeOut == 'm') {
@@ -445,6 +431,7 @@ int main(int argc, char **argv) {
     fclose(fpOut);
 
     freeMem(imageArr, imageHeight);
+    free(copiedRegion);
 
     if(UA == true) {
         //printf("UA bot returned\n");
