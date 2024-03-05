@@ -97,7 +97,7 @@ void createCopiedRegionArr(int **imageArr, int *copiedRegion, int imageWidth, in
 }
 
 
-void pasteCopiedRegion(int **imageArr, int *copiedRegion, int imageWidth, int imageHeight, long *pParameters, long *cParameters, int overflowRow, int overflowCol) {
+void pasteCopiedRegion(int **imageArr, int *copiedRegion, int imageWidth, int imageHeight, long *pParameters, long *cParameters, int overflowRow, int overflowCol, int overflowPaste) {
     int copiedIndex = 0; //index for copiedRegion
     int row = pParameters[0], col = pParameters[1], width = cParameters[2], height = cParameters[3];
     int upperR = row + height - 1 - overflowRow, upperC = col + width - 1 - overflowCol; //upper bound index for row & col
@@ -111,6 +111,11 @@ void pasteCopiedRegion(int **imageArr, int *copiedRegion, int imageWidth, int im
                 imageArr[currR][currC * 3 + 1] = copiedRegion[copiedIndex+1];
                 imageArr[currR][currC * 3 + 2] = copiedRegion[copiedIndex+2];
                 copiedIndex += 3;
+            }
+            if(overflowPaste != 0) {//if the pasting overflows off the right side
+                if(currC+1 >= imageWidth) {
+                    copiedIndex += 3 * overflowPaste;//skips over the overflow pixels
+                }
             }
         }
     }
@@ -420,12 +425,14 @@ int main(int argc, char **argv) {
     int *copiedRegion = NULL;
     int overflowRow = 0;
     int overflowCol = 0;
+    int overflowPaste = 0;
     if(cCount > 0) {
         copiedRegion = (int *)malloc(cParameters[2] * cParameters[3] * 3 * sizeof(int));
         overflowRow = (cParameters[0] + cParameters[3] > imageHeight) ? ((cParameters[0] + cParameters[3]) - imageHeight) : 0;
         overflowCol = (cParameters[1] + cParameters[2] > imageWidth) ? ((cParameters[1] + cParameters[2]) - imageWidth) : 0;
+        overflowPaste = (cParameters[2] + pParameters[1] > imageWidth) ? ((cParameters[2] + pParameters[1]) - imageWidth) : 0;
         createCopiedRegionArr(imageArr, copiedRegion, imageWidth, imageHeight, cParameters);
-        pasteCopiedRegion(imageArr, copiedRegion, imageWidth, imageHeight, pParameters, cParameters, overflowRow, overflowCol);
+        pasteCopiedRegion(imageArr, copiedRegion, imageWidth, imageHeight, pParameters, cParameters, overflowRow, overflowCol, overflowPaste);
     } else {
         (void) overflowCol;
         (void) overflowRow;
