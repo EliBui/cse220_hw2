@@ -418,7 +418,7 @@ int main(int argc, char **argv) {
     }
 
     int **imageArr = (int **)malloc(imageHeight * sizeof(int *)); //this will hold the entire image
-    for(i = 0; i < imageWidth; i++) {
+    for(i = 0; i < imageHeight; i++) {
         imageArr[i] = (int *)malloc(imageWidth * 3 * sizeof(int));
     }
 
