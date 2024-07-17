@@ -1,4 +1,4 @@
-CSE 220 Homework 2 
+CSE 220 Homework 2  
 Pixel manipulation in C  
 
 Full homework description here:  
